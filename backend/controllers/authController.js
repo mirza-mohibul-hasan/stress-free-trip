@@ -30,6 +30,7 @@ const userRegister = async (req, res, next) => {
     const otp = generateOTP().otp;
     req.session.otp = otp;
     req.session.user_id = user._id;
+    console.log("create", req.session);
     const mailOptions = {
       from: "ecosyncninjas@gmail.com",
       to: email,
@@ -149,6 +150,7 @@ const userLogin = async (req, res, next) => {
 const varifyOTP = async (req, res, next) => {
   try {
     const { otp } = req.body;
+    console.log(req.session);
     if (otp === JSON.stringify(req.session.otp)) {
       const user = await User.findByIdAndUpdate(req.session.user_id, {
         varify: true,

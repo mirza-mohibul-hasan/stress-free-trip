@@ -17,7 +17,6 @@ export const loginApi = createAsyncThunk(
       const response = await axios.post(loginUrl, { email, password });
       return response.data;
     } catch (error) {
-      console.log(error.response);
       return thunkApi.rejectWithValue(error.response.data);
     }
   }
@@ -29,7 +28,6 @@ const loginSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(loginApi.pending, (state) => {
       state.loading = true;
-      console.log("loading");
     });
 
     builder.addCase(loginApi.fulfilled, (state, action) => {
@@ -47,7 +45,6 @@ const loginSlice = createSlice({
       state.error = action.payload?.msg;
       state.loading = false;
       state.token = "";
-      console.log(action.payload);
     });
   },
 });

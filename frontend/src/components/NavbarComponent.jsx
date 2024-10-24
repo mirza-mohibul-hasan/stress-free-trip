@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import {
   Navbar,
   NavbarBrand,
@@ -21,16 +22,24 @@ const NavbarComponent = () => {
           <NavbarItem>Contact</NavbarItem>
         </NavbarList>
         <NavbarList>
-          <NavbarItem>Sign In</NavbarItem>
-          <NavbarItem active={true}>Sign Up</NavbarItem>
+          <Link to="/login">
+            <NavbarItem>Sign In</NavbarItem>
+          </Link>
+          <Link to="/register">
+            <NavbarItem active={true}>Sign Up</NavbarItem>
+          </Link>
         </NavbarList>
         <NavbarCollapseBtn />
         <NavbarCollapse>
           <NavbarItem>Projects</NavbarItem>
           <NavbarItem>Research</NavbarItem>
           <NavbarItem>Contact</NavbarItem>
-          <NavbarItem>Sign In</NavbarItem>
-          <NavbarItem active={true}>Sign Up</NavbarItem>
+          <Link to="/login">
+            <NavbarItem>Sign In</NavbarItem>
+          </Link>
+          <Link to="/register">
+            <NavbarItem active={true}>Sign Up</NavbarItem>
+          </Link>
         </NavbarCollapse>
       </NavbarContainer>
     </Navbar>

@@ -4,4 +4,4 @@ export default baseUrl;
 
 export const loginUrl = `${baseUrl}/auth/login`;
 export const registerUrl = `${baseUrl}/auth/register`;
-export const verifyAuth = `${baseUrl}/verify-otp`;
+export const varifyAuth = `${baseUrl}/auth/varify-otp`;

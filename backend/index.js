@@ -1,6 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const session = require("express-session");
+const cors = require("cors");
 
 const globalErrHandle = require("./middlewares/globalErrHandle");
 const authRoutes = require("./routes/authRoutes");
@@ -8,19 +9,22 @@ require("./config/dbConnector");
 
 const app = express();
 
+app.use(cors({ origin: "http://localhost:5173", credentials: true }));
+app.use(express.json());
+
 // Session
 app.use(
   session({
+    key: "key",
     secret: "stress-free-trip",
-    resave: true,
-    saveUninitialized: true,
+    resave: false,
+    saveUninitialized: false,
     cookie: {
-      expires: 300000,
+      secure: false,
+      maxAge: 300000,
     },
   })
 );
-
-app.use(express.json());
 
 //Authentication
 app.use("/api/v1/auth", authRoutes);
