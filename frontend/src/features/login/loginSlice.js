@@ -7,6 +7,7 @@ import { loginUrl } from "../../utils/userUrl";
 const initialState = {
   error: "",
   loading: false,
+  user: "",
   token: getToken(),
 };
 
@@ -36,6 +37,7 @@ const loginSlice = createSlice({
       state.loading = false;
       state.error = "";
       if (data.status === "success") {
+        state.user = data.data.user_email;
         state.token = `Bearer ${data.data.token}`;
         setToken(state.token);
       }
@@ -43,6 +45,7 @@ const loginSlice = createSlice({
 
     builder.addCase(loginApi.rejected, (state, action) => {
       state.error = action.payload?.msg;
+      state.user = "";
       state.loading = false;
       state.token = "";
     });

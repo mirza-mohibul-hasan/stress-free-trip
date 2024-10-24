@@ -1,13 +1,14 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Input, Label } from "keep-react";
 import { useDispatch, useSelector } from "react-redux";
 
 import loginImage from "../../assets/login.svg";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { loginApi } from "./loginSlice";
 
 function SignIn() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const loginState = useSelector((state) => state.login);
   const [formData, setFormData] = useState({
     email: "",
@@ -20,6 +21,13 @@ function SignIn() {
       [e.target.name]: e.target.value,
     });
   };
+
+  useEffect(() => {
+    console.log(loginState.user);
+    if (loginState.user) {
+      navigate("/");
+    }
+  }, [loginState.user]);
 
   const handleSubmit = (e) => {
     e.preventDefault();

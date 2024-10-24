@@ -118,7 +118,7 @@ const userLogin = async (req, res, next) => {
       email,
     }).select("+password");
 
-    if (!user || !user.varify) {
+    if (!user) {
       return next(appError("Invalid Login Credentials", 406));
     }
 
