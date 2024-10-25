@@ -1,30 +1,24 @@
-require("dotenv").config(); // Load environment variables from .env
+require("dotenv").config();
 const express = require("express");
-const { GoogleGenerativeAI } = require("@google/generative-ai");
+const axios = require("axios");
 const cors = require("cors");
-const app = express();
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 
+const app = express();
 app.use(cors());
 app.use(express.json()); // Middleware to parse JSON bodies
 
-// API endpoint to generate structured itinerary with multiple ways
+// API endpoint to generate itinerary
 app.post("/generate-itinerary", async (req, res) => {
   try {
     const { startingPoint, destination, budget, duration } = req.body;
-    console.log(req.body);
-    // Validate input
+
     if (!startingPoint || !destination || !budget || !duration) {
       return res.status(400).json({ error: "All fields are required." });
     }
 
-    // Design the prompt to request multiple ways of traveling
     const prompt = `
-      Provide two different ways to travel for a ${duration}-day ${budget} trip from ${startingPoint} to ${destination}, Bangladesh. 
-      Each way should include:
-      - Daily itinerary with transportation, accommodation, meals, and activities.
-      - Total estimated cost for each way.
-      Format the response as follows:
+      Generate two travel itinerary options for a ${duration}-day trip from ${startingPoint} to ${destination} with a ${budget} budget.
+      The response must be valid JSON in the following structure:
 
       {
         "ways": [
@@ -32,7 +26,7 @@ app.post("/generate-itinerary", async (req, res) => {
             "name": "Way-01",
             "days": [
               { "day": 1, "transportation": ["..."], "accommodation": "...", "meals": ["..."], "activities": ["..."] },
-              ...
+              { "day": 2, "transportation": ["..."], "accommodation": "...", "meals": ["..."], "activities": ["..."] }
             ],
             "totalCost": "...",
             "summary": "...",
@@ -42,7 +36,7 @@ app.post("/generate-itinerary", async (req, res) => {
             "name": "Way-02",
             "days": [
               { "day": 1, "transportation": ["..."], "accommodation": "...", "meals": ["..."], "activities": ["..."] },
-              ...
+              { "day": 2, "transportation": ["..."], "accommodation": "...", "meals": ["..."], "activities": ["..."] }
             ],
             "totalCost": "...",
             "summary": "...",
@@ -52,16 +46,26 @@ app.post("/generate-itinerary", async (req, res) => {
       }
     `;
 
-    // Call the Generative AI model
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-    const result = await model.generateContent(prompt);
+    // Call Hugging Face API
+    const response = await axios.post(
+      "https://api-inference.huggingface.co/models/bigscience/bloom",
+      { inputs: prompt },
+      {
+        headers: { Authorization: `Bearer ${process.env.HUGGINGFACE_API_KEY}` },
+      }
+    );
 
-    const response = await result.response;
-    const rawText = response.text();
+    console.log("Full API Response:", response.data); // Log full response
 
-    console.log("Raw AI Response:", rawText); // Log the raw response
+    // Ensure response has data
+    const rawText = response.data?.generated_text;
+    if (!rawText) {
+      throw new Error("No generated text received from the AI model.");
+    }
 
-    // Clean and parse the AI response into structured JSON
+    console.log("Raw AI Response:", rawText);
+
+    // Clean and parse the AI response
     const cleanedText = cleanAIResponse(rawText);
     const structuredResponse = tryParseJSON(cleanedText);
 
@@ -69,7 +73,6 @@ app.post("/generate-itinerary", async (req, res) => {
       throw new Error("Failed to parse the AI response as JSON.");
     }
 
-    // Send the structured JSON response
     res.status(200).json(structuredResponse);
   } catch (error) {
     console.error("Error generating itinerary:", error.message);
@@ -77,18 +80,23 @@ app.post("/generate-itinerary", async (req, res) => {
   }
 });
 
-// Helper function to clean AI response by removing code fences
-function cleanAIResponse(text) {
-  return text.replace(/```(?:json)?|```/g, "").trim(); // Remove code fences
+// Helper function to clean AI response
+function cleanAIResponse(text = "") {
+  const jsonStart = text.indexOf("{");
+  const jsonEnd = text.lastIndexOf("}");
+  if (jsonStart === -1 || jsonEnd === -1) {
+    throw new Error("Invalid JSON format in the AI response.");
+  }
+  return text.substring(jsonStart, jsonEnd + 1).trim();
 }
 
-// Helper function to try parsing text as JSON
+// Helper function to safely parse JSON
 function tryParseJSON(text) {
   try {
     return JSON.parse(text);
   } catch (error) {
     console.error("JSON Parsing Error:", error.message);
-    return null; // Return null if parsing fails
+    return null;
   }
 }
 
