@@ -54,7 +54,7 @@ npm run dev
 
 ```sh
 cd backend
-npm run dev
+node index.js
 ```
 
 5. **Access the application** at `http://localhost:3000`.
