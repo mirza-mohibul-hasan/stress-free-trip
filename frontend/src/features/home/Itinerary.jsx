@@ -2,13 +2,15 @@ import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
 import MapView from "../../components/MapView";
+import { useSelector } from "react-redux";
+import { js } from "@eslint/js";
 
 export default function Itinerary() {
   const { state } = useLocation();
   const [itinerary, setItinerary] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  console.log(state);
+  const user_id = useSelector((state) => state.login.user_id);
 
   useEffect(() => {
     const fetchItinerary = async () => {
@@ -27,7 +29,7 @@ export default function Itinerary() {
 
       try {
         const response = await axios.post(
-          "http://localhost:3000/generate-itinerary",
+          "http://localhost:9000/api/v1/itinerary/generate",
           state
         );
         setItinerary(response.data);
@@ -41,6 +43,20 @@ export default function Itinerary() {
 
     fetchItinerary();
   }, [state]);
+
+  const handleClick = async (way) => {
+    try {
+      console.log(user_id);
+      const response = await axios.post(
+        "http://localhost:9000/api/v1/auth/add-way",
+        { user_id, data: way }
+      );
+
+      console.log(response.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
@@ -84,6 +100,15 @@ export default function Itinerary() {
               <li key={i}>{tip}</li>
             ))}
           </ul>
+
+          <button
+            onClick={() => {
+              handleClick(way);
+            }}
+            className="mt-4 bg-blue-500 rounded-md text-white px-5 py-2"
+          >
+            Select
+          </button>
         </div>
       ))}
 
