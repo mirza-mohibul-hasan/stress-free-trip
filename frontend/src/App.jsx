@@ -5,6 +5,7 @@ import SignIn from "./features/login/SignIn";
 import NavbarComponent from "./components/NavbarComponent";
 import SignUp from "./features/register/SignUp";
 import Home from "./features/home/Home";
+import Itinerary from "./features/home/Itinerary";
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
       <Routes>
         <Route path="/login" element={<SignIn />} />
         <Route path="/register" element={<SignUp />} />
+        <Route path="/itinerary" element={<Itinerary />} />
         <Route path="/" element={<Home />} />
       </Routes>
     </BrowserRouter>
