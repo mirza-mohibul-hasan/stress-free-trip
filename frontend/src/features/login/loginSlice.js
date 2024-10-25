@@ -8,6 +8,7 @@ const initialState = {
   error: "",
   loading: false,
   user: "",
+  user_id: "",
   token: getToken(),
 };
 
@@ -39,6 +40,7 @@ const loginSlice = createSlice({
       if (data.status === "success") {
         state.user = data.data.user_email;
         state.token = `Bearer ${data.data.token}`;
+        state.user_id = data.data.user_id;
         setToken(state.token);
       }
     });
@@ -47,6 +49,7 @@ const loginSlice = createSlice({
       state.error = action.payload?.msg;
       state.user = "";
       state.loading = false;
+      state.user_id = "";
       state.token = "";
     });
   },

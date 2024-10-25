@@ -36,7 +36,7 @@ const SignUp = () => {
   useEffect(() => {
     if (registerState.success) {
       console.log("signup");
-      navigate("/email-confirmation");
+      navigate("/login");
     }
   }, [registerState.success]);
 
