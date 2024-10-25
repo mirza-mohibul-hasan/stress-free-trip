@@ -1,4 +1,6 @@
 const appError = require("../utils/appError");
+const { GoogleGenerativeAI } = require("@google/generative-ai");
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 
 const generateItinerary = async (req, res, next) => {
   try {
@@ -67,4 +69,19 @@ const generateItinerary = async (req, res, next) => {
   }
 };
 
-module.exports = generateItinerary;
+// Helper function to clean AI response by removing code fences
+function cleanAIResponse(text) {
+  return text.replace(/```(?:json)?|```/g, "").trim(); // Remove code fences
+}
+
+// Helper function to try parsing text as JSON
+function tryParseJSON(text) {
+  try {
+    return JSON.parse(text);
+  } catch (error) {
+    console.error("JSON Parsing Error:", error.message);
+    return null; // Return null if parsing fails
+  }
+}
+
+module.exports = { generateItinerary };
