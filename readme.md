@@ -1,4 +1,4 @@
-# tress Free Trip System
+# Stress Free Trip System
 
 This project is an AI-integrated itinerary generation system that provides users with customized travel plans, including transport options, meal plans, accommodation suggestions, and estimated costs. Built using the MERN stack and Vite, it leverages AI to recommend routes and calculate costs, simplifying travel planning for users.
 
